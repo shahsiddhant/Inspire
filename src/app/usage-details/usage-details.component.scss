@@ -1,0 +1,24 @@
+.back {
+  position: fixed;
+  top: 0;
+  left: 0;
+  margin: 20px;
+}
+
+
+.your-usage-legend {
+  display: inline-block;
+  min-width: 20px;
+  min-height: 20px;
+  background: blue;
+  border: 1px solid black;
+}
+
+
+.avg-usage-legend {
+    display: inline-block;
+    min-width: 20px;
+    min-height: 20px;
+    background: red;
+    border: 1px solid black;
+  }

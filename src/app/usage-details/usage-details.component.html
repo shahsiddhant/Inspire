@@ -1,0 +1,32 @@
+<div class="back" [routerLink]="['../']">
+  Back
+</div>
+<div class="container-fluid">
+
+  <div class="row">
+    <div class="col-12 text-center mt-5">
+      <div class="row mt-5">
+        <!-- Get from some API -->
+        <div class="col-12">Dec 2016</div>
+      </div>
+      <div class="row">
+        <div #chart></div>
+      </div>
+
+      <div class="row">
+        <div class="col-12">
+          <div class="your-usage-legend"></div>
+          <span class="ml-3">Your usage</span>
+        </div>
+
+      </div>
+      <div class="row">
+        <div class="col-12">
+          <span class="avg-usage-legend"></span>
+
+          <span class="ml-3">{{text}}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
