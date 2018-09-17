@@ -11,6 +11,7 @@ import { DailyUsage } from '../shared/models/daily-usage';
 export class UsageDetailsComponent implements OnInit {
   public accountId: string;
   public usageBreakdown: DailyUsage;
+  public type: string;
   @ViewChild('chart')
   chartElement: ElementRef;
 
@@ -47,6 +48,7 @@ export class UsageDetailsComponent implements OnInit {
             this.avgUsage = response;
             this.buildChart();
             this.text = 'Average Usage';
+            this.type = 'ideal';
           });
         });
       } else {
@@ -58,6 +60,7 @@ export class UsageDetailsComponent implements OnInit {
             this.avgUsage = response;
             this.buildChart();
             this.text = 'Ideal Usage';
+            this.type = 'avg';
           });
         });
       }
