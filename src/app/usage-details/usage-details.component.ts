@@ -21,7 +21,7 @@ export class UsageDetailsComponent implements OnInit {
 
   private svgElement: HTMLElement;
   private chartProps: any;
-  public avgUsage: DailyUsage;
+  public threshold: DailyUsage;
 
   public text: string;
 
@@ -45,7 +45,7 @@ export class UsageDetailsComponent implements OnInit {
 
           // Show Average usage for good customers
           this.usageService.getAverageUsage().subscribe((response: DailyUsage) => {
-            this.avgUsage = response;
+            this.threshold = response;
             this.buildChart();
             this.text = 'Average Usage';
             this.type = 'ideal';
@@ -57,7 +57,7 @@ export class UsageDetailsComponent implements OnInit {
 
           // Show ideal usage for below average customer
           this.usageService.getIdealUsage().subscribe((response: DailyUsage) => {
-            this.avgUsage = response;
+            this.threshold = response;
             this.buildChart();
             this.text = 'Ideal Usage';
             this.type = 'avg';
@@ -70,24 +70,14 @@ export class UsageDetailsComponent implements OnInit {
 
   }
 
-  // formatDate(): void {
-  //   this.usageBreakdown.daily_energy_usage.forEach(singleDay => {
-  //     //   res.daily_energy_usage.forEach(date => {
-  //     //     const key = Object.keys(date)[0];
-  //     //     console.log(key, date[key]);
-  //     const key = Object.keys(singleDay)[0];
-  //     if (typeof key === 'string') {
-  //       // singleDay[key] = ;
-  //     }
-  //   });
+  //
   buildChart() {
     this.chartProps = {};
-    // this.formatDate();
 
     // Set the dimensions of the canvas / graph
-    const margin = { top: 30, right: 20, bottom: 30, left: 50 },
-      width = 380 - margin.left - margin.right,
-      height = 400 - margin.top - margin.bottom;
+    const margin = { top: 30, right: 20, bottom: 30, left: 30 },
+      width = this.chartElement.nativeElement.clientWidth - margin.left - margin.right,
+      height = this.chartElement.nativeElement.clientHeight - margin.top - margin.bottom;
 
     // Set the ranges
     this.chartProps.x = d3.scaleTime().domain([new Date(2016, 11, 1), new Date(2016, 11, 31)]).range([0, width]);
@@ -103,12 +93,11 @@ export class UsageDetailsComponent implements OnInit {
       return this.chartProps.x(new Date(key));
 
     }).y((d) => {
-      // console.log('Close market');
       const key = Object.keys(d)[0];
-      // console.log(d[key]);
       return this.chartProps.y(d[key]);
     });
 
+    // Chart
     const svg = d3.select(this.chartElement.nativeElement)
       .append('svg')
       .attr('width', '90vw')
@@ -116,7 +105,7 @@ export class UsageDetailsComponent implements OnInit {
       .append('g')
       .attr('transform', `translate(${margin.left},${margin.top})`);
 
-    // // Add the valueline path.
+    // Customer usage line.
     svg.append('path')
       .attr('class', 'line line1')
       .style('stroke', 'blue')
@@ -124,16 +113,13 @@ export class UsageDetailsComponent implements OnInit {
       .style('fill', 'none')
       .attr('d', lineValues(this.usageBreakdown.daily_energy_usage));
 
-
-    // Average Usage line
+    // Threshold Usage line
     svg.append('path')
       .attr('class', 'line line2')
       .style('stroke', 'red')
       .style('stroke-width', '3')
       .style('fill', 'none')
-      .attr('d', lineValues(this.avgUsage.daily_energy_usage));
-
-
+      .attr('d', lineValues(this.threshold.daily_energy_usage));
 
     // Add the X Axis
     svg.append('g')
@@ -145,12 +131,5 @@ export class UsageDetailsComponent implements OnInit {
     svg.append('g')
       .attr('class', 'y axis')
       .call(yAxis);
-
-    // Setting the required objects in chartProps so they could be used to update the chart
-    // this.chartProps.svg = svg;
-    // this.chartProps.accountLine = lineValues;
-    // this.chartProps.avgLine = valueline2;
-    // this.chartProps.xAxis = xAxis;
-    // this.chartProps.yAxis = yAxis;
   }
 }
