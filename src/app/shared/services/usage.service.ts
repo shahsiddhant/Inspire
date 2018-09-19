@@ -28,6 +28,7 @@ export class UsageService {
             // make API call if it doesnt exist
             return this.http.get(`${this.baseUrl}accounts/homescore/${accountNum}/summary`)
                 .pipe(map(res => {
+                    // Store response to the cache
                     this.cachedScore.push({
                         id: accountNum,
                         homeScore: res as HomeScore

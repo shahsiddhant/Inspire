@@ -3,26 +3,22 @@ import { ActivatedRoute } from '@angular/router';
 import { UsageService } from '../shared/services/usage.service';
 import * as d3 from 'd3';
 import { DailyUsage } from '../shared/models/daily-usage';
+import { HomeScore } from '../shared/models/home-score';
 @Component({
   selector: 'app-usage-details',
   templateUrl: './usage-details.component.html',
   styleUrls: ['./usage-details.component.scss']
 })
 export class UsageDetailsComponent implements OnInit {
+
+  @ViewChild('chart')
+  public chartElement: ElementRef;
+
   public accountId: string;
   public usageBreakdown: DailyUsage;
   public type: string;
-  @ViewChild('chart')
-  chartElement: ElementRef;
-
-  parseDate = d3.timeParse('%d-%m-%Y');
-
-
-
-  private svgElement: HTMLElement;
   private chartProps: any;
   public threshold: DailyUsage;
-
   public text: string;
 
   constructor(
@@ -33,17 +29,15 @@ export class UsageDetailsComponent implements OnInit {
   ngOnInit() {
 
     this.accountId = this.route.snapshot.params['id'];
-    let accountScore = null;
-    // let observableList = [];
-    this.usageService.getScore(this.accountId).subscribe(scoreRes => {
-      accountScore = scoreRes.score;
+
+    this.usageService.getScore(this.accountId).subscribe((scoreRes: HomeScore) => {
 
       // Hypothetical threshold
-      if (accountScore > 50) {
+      if (scoreRes.score > 50) {
         this.usageService.getDailyUsage(this.accountId).subscribe((res: DailyUsage) => {
           this.usageBreakdown = res;
 
-          // Show Average usage for good customers
+          // get average usage for good customers
           this.usageService.getAverageUsage().subscribe((response: DailyUsage) => {
             this.threshold = response;
             this.buildChart();
@@ -51,11 +45,12 @@ export class UsageDetailsComponent implements OnInit {
             this.type = 'ideal';
           });
         });
+
       } else {
         this.usageService.getDailyUsage(this.accountId).subscribe((res: DailyUsage) => {
           this.usageBreakdown = res;
 
-          // Show ideal usage for below average customer
+          // get ideal usage for below average customer
           this.usageService.getIdealUsage().subscribe((response: DailyUsage) => {
             this.threshold = response;
             this.buildChart();
@@ -65,12 +60,9 @@ export class UsageDetailsComponent implements OnInit {
         });
       }
     });
-
-
-
   }
 
-  //
+  // Build the SVG d3 usage chart
   buildChart() {
     this.chartProps = {};
 
